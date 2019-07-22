@@ -12,10 +12,12 @@ This implementation of the neural net is able to accept an arbitiary
 number of features and examples.
 
 -data structure
+-_-_-_-_-_-_-_-_-_
 the inputs are structured with the features being the row and examples shared in columns
 example: if there is are 3 pieces of data (1, 2), (3, 4), (5, 6)
-from the data provided there are 2 features and 3 examples
-the data will be structures as so:
+from the data provided there are 2 features and 3 examples the data would be
+structured as so:
+
 5 3 1 --> o
 | | |
 6 4 2 --> o
@@ -28,7 +30,8 @@ x = np.array([[1, 2]]) (2 examples with 1 feature)
 x = np.array([[1], [1]) (1 example with 2 features)
 x = np.array([[1, 1], [1, 1]) (2 examples with 2 features)
 x = np.array([[1, 1, 1], [1, 1, 1]) (3 examples with 2 features)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 y = np.array([[1]]) (output for 1 example)
 y = np.array([[1, 2]]) (output for 2 examples)
 
