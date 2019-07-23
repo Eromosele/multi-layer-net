@@ -35,7 +35,9 @@ y = np.array([[1, 2]]) (output for 2 examples)
 
 """
 import numpy as np
+from progress.bar import ShadyBar
 
+ITERATIONS = 5000
 
 def sigmoid(x, der=False):
     if der is True:
@@ -54,7 +56,7 @@ column4_ = []
 column5_ = []
 
 # comment out this section for custom examples
-with open('test_data.txt', 'r') as reader:
+with open('train_data.txt', 'r') as reader:
     lines = [line.rstrip('\n') for line in reader]
     for line in lines:
         column1, column2, column3, column4, column5 = line.split(',')
@@ -67,8 +69,6 @@ with open('test_data.txt', 'r') as reader:
     x = np.array([(column1_), (column2_), (column3_), (column4_)]).T
     y = np.array([(column5_)])
 
-    print(y)
-
 reader.close()
 
 
@@ -80,9 +80,10 @@ weight1 = np.random.random((x.shape[1], 8)) # weight between input and hidden la
 weight2 = np.random.random((8, 8)) # weight between hidden layer 1 and 2
 weight3 = np.random.random((8, 1)) # weight between hidden layer 2 and output
 
+bar = ShadyBar('Processing', max=ITERATIONS, suffix="%(percent)d%%")
 
 # iterations
-for i in range(3000):
+for i in range(ITERATIONS):
 
     derived_hidden_layer = sigmoid(np.dot(x, weight1))
     derived_hidden_layer2 = sigmoid(np.dot(derived_hidden_layer, weight2))
@@ -92,12 +93,55 @@ for i in range(3000):
     error = np.square(np.mean(y.T - output))
     derived_error = y.T - output
 
+    error_percent = (np.mean(output)-np.mean(y.T)) * 100
+
     scalar = derived_error * sigmoid(np.dot(derived_hidden_layer2, weight3), True) # this remains static throught the calculations
 
     weight3 += np.dot(scalar.T,derived_hidden_layer2).T * 0.01
     weight2 += np.dot(np.dot(scalar,weight3.T).T, sigmoid(np.dot(derived_hidden_layer, weight2),True) * sigmoid(np.dot(x, weight1),True)) * 0.01
     weight1 += np.dot((np.dot(scalar,weight3.T) * np.dot(sigmoid(np.dot(derived_hidden_layer, weight2),True),weight2) * sigmoid(np.dot(x, weight1),True)).T,x).T * 0.01
 
-    if i % 300 == 0:
-        print("Error (%s'th iteration): %s" % (i,error))
+    # if i % 500 == 0:
+    #     print()
+    #     print("Error (%s'th iteration): %s" % (i,error))
+    #     print()
+    bar.next()
+
+bar.finish()
+print('%s error difference (<1 is better)' % np.abs(error_percent))
 print(output)
+
+column1_ = []
+column2_ = []
+column3_ = []
+column4_ = []
+column5_ = []
+# test data
+with open('test_data.txt', 'r') as testreader:
+    lines = [line.rstrip('\n') for line in testreader]
+    for line in lines:
+        column1, column2, column3, column4, column5 = line.split(',')
+        column1_.append(float(column1))
+        column2_.append(float(column2))
+        column3_.append(float(column3))
+        column4_.append(float(column4))
+        column5_.append(float(column5))
+
+    test_x = np.array([(column1_), (column2_), (column3_), (column4_)]).T
+    test_y = np.array([(column5_)])
+
+testreader.close()
+
+derived_hidden_layer_test = sigmoid(np.dot(test_x, weight1))
+derived_hidden_layer2_test = sigmoid(np.dot(derived_hidden_layer_test, weight2))
+
+test_output = sigmoid(np.dot(derived_hidden_layer2_test, weight3))
+
+test_error = np.square(np.mean(test_y.T - test_output))
+test_derived_error = test_y.T - test_output
+
+test_error_percent = (np.mean(test_output)-np.mean(test_y.T)) * 100
+
+print()
+print('%s test error difference (<1 is better)' % np.abs(test_error_percent))
+print(test_output)
